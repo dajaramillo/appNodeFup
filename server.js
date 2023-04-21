@@ -14,6 +14,7 @@ const {allowInsecurePrototypeAccess} = require('@handlebars/allow-prototype-acce
 
 
 
+
 //Nuestra aplicación
 const app = express();
 //Configuramos puerto
