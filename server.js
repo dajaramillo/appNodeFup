@@ -11,10 +11,6 @@ const Handlebars = require('handlebars')
 const {allowInsecurePrototypeAccess} = require('@handlebars/allow-prototype-access')
 
 
-
-
-
-
 //Nuestra aplicación
 const app = express();
 //Configuramos puerto
@@ -29,15 +25,8 @@ app.engine('.hbs', exphbs.engine({
 }));
 app.set('view engine', '.hbs'); //motor de vistas en hbs
 
-
-app.get('/', (req,res)=>{
-    //res.send("Este es el Index");
-    res.render('index');
-});
-
-app.get('/signin', (req,res)=>{
-    res.send("Aquí va el formulario de inicio de sesión");
-});
+//Apuntamos a las rutas
+app.use(require('./routes/index'));
 
 //Lanzar el servidor
 app.listen(app.get('port'), function(){
