@@ -1,4 +1,3 @@
-//console.log('Prueba exitosa1');
 const express = require('express');
 const path = require('path');
 const exphbs = require('express-handlebars'); //motor de plantillas
@@ -10,10 +9,11 @@ const passport = require('passport');
 const Handlebars = require('handlebars')
 const {allowInsecurePrototypeAccess} = require('@handlebars/allow-prototype-access')
 
-
-//Nuestra aplicación
+//Inicializaciones
 const app = express();
-//Configuramos puerto
+require('./database');
+//require('./config/passport');
+//configuraciones
 app.set('port', process.env.PORT || 3000);
 app.set('views', path.join(__dirname, 'views')); //asignamos la carpeta views dentro de src
 app.engine('.hbs', exphbs.engine({
@@ -25,10 +25,33 @@ app.engine('.hbs', exphbs.engine({
 }));
 app.set('view engine', '.hbs'); //motor de vistas en hbs
 
-//Apuntamos a las rutas
-app.use(require('./routes/index'));
+//Middlewares
+app.use(express.urlencoded({extended: false})); //estraer datos de la url
+app.use(methodOverride('_method')); //metodos de petición
+//configuración para encriptar contraseñas
+app.use(session({
+    secret: 'secret',
+    resave: true,
+    saveUninitialized: true
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash());
+//Varible globales
+app.use((req, res, next)=>{
+    res.locals.success_msg = req.flash('success_msg');
+    res.locals.error_msg = req.flash('error_msg');
+    res.locals.error = req.flash('error');
+    next();
+});
+// Routes
+app.use(require('./routes/index')); //rutas
+//app.use(require('./routes/users'));
+//app.use(require('./routes/objects'));
 
-//Lanzar el servidor
-app.listen(app.get('port'), function(){
-    console.log('Servidor corriendo en localhost:3000')
+//Static files
+//app.use(express.static(path.join(__dirname, 'public')));
+//Inicialización de servidor
+app.listen(app.get('port'), () =>{
+    console.log('Servidor en puerto', app.get('port'))
 });
